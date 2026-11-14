@@ -2,213 +2,162 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>ハクスラTD｜Loot Lane Defense</title>
 <style>
-  :root{
-    --bg:#0b0f17; --panel:#131a29; --panel2:#1a2338; --ink:#e8edf7; --muted:#8b96ad;
-    --line:#26314d; --gold:#f5c451; --hp:#e5484d; --xp:#4cc38a; --mana:#4f9cf9;
-    --rare:#4f9cf9; --epic:#b07fe8; --legend:#f5a524;
-  }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:none}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-    overscroll-behavior:none; user-select:none; -webkit-user-select:none}
-  #app{max-width:980px;margin:0 auto;padding:8px 10px calc(10px + env(safe-area-inset-bottom))}
-  header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 2px 8px}
-  h1{font-size:19px;margin:0;letter-spacing:.02em}
-  h1 .sub{font-size:11px;color:var(--muted);font-weight:400;margin-left:6px}
-  button{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);
-    border-radius:10px;padding:8px 12px;min-height:42px;cursor:pointer}
-  button:active{opacity:.7}
-  button.primary{background:#2f6fed;border-color:#2f6fed;font-weight:700;color:#fff}
-  button:disabled{opacity:.45}
-  #hud{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;background:var(--panel);
-    border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:14px}
-  #hud b{font-variant-numeric:tabular-nums}
-  .bar{height:8px;background:#0a0e16;border-radius:99px;overflow:hidden;min-width:110px;flex:1}
-  .bar>i{display:block;height:100%}
-  #hpFill{background:var(--hp)} #xpFill{background:var(--xp)}
-  .hud-group{display:flex;align-items:center;gap:6px}
-  #stageWrap{position:relative;margin-top:8px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0e1420}
-  canvas{display:block;width:100%;height:auto}
-  #controls{display:flex;gap:8px;margin-top:8px;align-items:stretch}
-  .abilities{display:flex;gap:8px;flex:1}
-  .ability{flex:1;position:relative;font-size:15px;font-weight:700;padding:10px 4px;line-height:1.25}
-  .ability small{display:block;font-size:11px;font-weight:400;color:var(--muted)}
-  .ability .cd{position:absolute;inset:0;background:rgba(5,8,14,.72);border-radius:10px;
-    display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
-  .side-btns{display:flex;flex-direction:column;gap:8px}
-  .overlay{position:fixed;inset:0;background:rgba(4,6,11,.78);display:flex;align-items:center;justify-content:center;z-index:40;padding:14px}
-  .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;
-    width:min(94vw,560px);max-height:88vh;overflow:auto}
-  .sheet h2{margin:0 0 8px;font-size:19px}
-  .sheet p{color:var(--muted);font-size:14px;line-height:1.6}
-  .cards{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-  .pick{text-align:left;padding:12px 14px;font-size:15px}
-  .pick b{display:block;font-size:16px}
-  .pick span{color:var(--muted);font-size:13px}
-  .item-row{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-top:8px;background:var(--panel2)}
-  .item-row .grow{flex:1;min-width:0}
-  .item-row .nm{font-weight:700}
-  .item-row .st{font-size:12px;color:var(--muted)}
-  .rarity-common{color:#c8d0e0}.rarity-rare{color:var(--rare)}.rarity-epic{color:var(--epic)}.rarity-legendary{color:var(--legend)}
-  .field{margin:10px 0}
-  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
-  .field input{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0d1322;color:var(--ink);min-height:48px}
-  table.rank{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
-  table.rank td,table.rank th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
-  table.rank td.n,table.rank th.n{text-align:right;font-variant-numeric:tabular-nums}
-  .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-  #toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);
-    background:#1d2740;color:#fff;border:1px solid var(--line);padding:9px 16px;border-radius:99px;font-size:14px;
-    opacity:0;pointer-events:none;transition:opacity .25s;z-index:60;max-width:92vw;text-align:center}
-  #toast.show{opacity:1}
-  .hidden{display:none !important}
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; overflow:hidden; background:#0b0f1e; }
+  body { font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; color:#eef1ff; user-select:none; -webkit-user-select:none; touch-action:none; }
+  #cv { position:fixed; inset:0; display:block; }
+  /* ===== HUD ===== */
+  #hud { position:fixed; top:0; left:0; right:0; padding:8px 10px; display:none; pointer-events:none; z-index:5; }
+  #hudTop { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .chip { background:rgba(10,14,30,.78); border:1px solid #39406e; border-radius:999px; padding:4px 11px; font-size:13px; font-weight:700; }
+  .chip b { color:#ffd94d; }
+  #xpWrap { margin-top:6px; height:10px; background:rgba(10,14,30,.8); border:1px solid #39406e; border-radius:999px; overflow:hidden; }
+  #xpFill { height:100%; width:0%; background:linear-gradient(90deg,#37d67a,#a8ff6b); transition:width .15s; }
+  #coreWrap { margin-top:6px; display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; }
+  #coreBarBg { flex:1; height:10px; background:rgba(10,14,30,.8); border:1px solid #39406e; border-radius:999px; overflow:hidden; }
+  #coreFill { height:100%; width:100%; background:linear-gradient(90deg,#39c2ff,#7de3ff); transition:width .2s; }
+  #heroHpBg { margin-top:4px; height:8px; background:rgba(10,14,30,.8); border:1px solid #39406e; border-radius:999px; overflow:hidden; }
+  #heroHpFill { height:100%; width:100%; background:linear-gradient(90deg,#ff5d7a,#ff9d5c); transition:width .15s; }
+  #banner { position:fixed; top:22%; left:0; right:0; text-align:center; font-size:34px; font-weight:900; color:#ffd94d; text-shadow:0 3px 0 #7a4d00,0 6px 18px rgba(0,0,0,.7); opacity:0; pointer-events:none; z-index:6; letter-spacing:2px; }
+  /* ===== buttons ===== */
+  #sideBtns { position:fixed; top:110px; right:10px; display:none; flex-direction:column; gap:8px; z-index:6; }
+  .sbtn { width:52px; height:52px; border-radius:16px; border:1px solid #4a539a; background:rgba(16,21,46,.9); color:#fff; font-size:22px; }
+  #abilBtns { position:fixed; right:12px; bottom:18px; display:none; gap:10px; z-index:6; align-items:flex-end; }
+  .abtn { position:relative; width:62px; height:62px; border-radius:50%; border:2px solid #4a539a; background:rgba(16,21,46,.92); color:#fff; font-size:25px; }
+  .abtn.big { width:74px; height:74px; font-size:30px; border-color:#8a6d1f; }
+  .abtn .cd { position:absolute; inset:0; border-radius:50%; background:rgba(0,0,0,.66); display:none; align-items:center; justify-content:center; font-size:17px; font-weight:800; }
+  .abtn .key { position:absolute; left:50%; bottom:-16px; transform:translateX(-50%); font-size:10px; color:#aab; }
+  #joyBase { position:fixed; width:116px; height:116px; border-radius:50%; border:2px solid rgba(140,155,255,.5); background:rgba(30,38,80,.3); display:none; z-index:6; pointer-events:none; }
+  #joyNub { position:absolute; left:50%; top:50%; width:52px; height:52px; border-radius:50%; background:rgba(160,175,255,.65); transform:translate(-50%,-50%); }
+  /* ===== overlays ===== */
+  .ov { position:fixed; inset:0; background:rgba(5,8,20,.86); display:none; align-items:center; justify-content:center; z-index:10; padding:14px; overflow-y:auto; }
+  .ov.show { display:flex; }
+  .panel { background:#151b38; border:1px solid #39406e; border-radius:18px; padding:20px; max-width:560px; width:100%; max-height:92vh; overflow-y:auto; }
+  .panel h2 { font-size:20px; margin-bottom:10px; }
+  .panel p { font-size:13px; line-height:1.75; color:#c6cdf5; }
+  .btn { display:block; width:100%; margin-top:12px; padding:13px; border:none; border-radius:12px; background:linear-gradient(180deg,#ffd94d,#f5a623); color:#231a00; font-size:16px; font-weight:800; cursor:pointer; }
+  .btn.sub { background:#232b57; color:#dfe5ff; border:1px solid #4a539a; }
+  .btn:disabled { opacity:.45; }
+  input[type=text] { width:100%; padding:11px; border-radius:10px; border:1px solid #4a539a; background:#0d1230; color:#fff; font-size:15px; margin-top:8px; }
+  /* hero cards */
+  #heroGrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:12px; }
+  .hcard { background:#1b2247; border:2px solid #39406e; border-radius:14px; padding:12px; cursor:pointer; text-align:left; color:#eef1ff; width:100%; }
+  .hcard.sel { border-color:#ffd94d; background:#262b12; box-shadow:0 0 0 2px #ffd94d55, 0 0 18px #ffd94d33; }
+  .hcard .ic { font-size:34px; }
+  .hcard .nm { font-weight:800; font-size:15px; margin:4px 0 2px; }
+  .hcard .ds { font-size:11px; color:#aeb7ea; line-height:1.55; }
+  .hcard .st { font-size:11px; color:#ffd94d; margin-top:5px; font-weight:700; }
+  .cards { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  .card { flex:1 1 140px; background:#1b2247; border:2px solid #39406e; border-radius:14px; padding:14px; cursor:pointer; text-align:left; color:#eef1ff; }
+  .card:hover { border-color:#ffd94d; }
+  .card .t { font-weight:800; font-size:15px; margin-bottom:5px; }
+  .card .d { font-size:12px; color:#aeb7ea; line-height:1.6; }
+  .card .price { color:#ffd94d; font-weight:800; margin-top:6px; font-size:13px; }
+  .ritem { display:flex; align-items:center; gap:10px; background:#1b2247; border:1px solid #39406e; border-radius:12px; padding:9px 11px; margin-top:8px; font-size:13px; }
+  .ritem .inf { flex:1; }
+  .ritem button { padding:7px 10px; border-radius:9px; border:1px solid #4a539a; background:#232b57; color:#fff; font-size:12px; font-weight:700; }
+  .r-N { color:#cfd6ff; } .r-R { color:#57b6ff; } .r-E { color:#c77dff; } .r-L { color:#ffb020; }
+  table.rk { width:100%; border-collapse:collapse; margin-top:8px; font-size:13px; }
+  table.rk td, table.rk th { padding:6px 8px; border-bottom:1px solid #2b3468; text-align:left; }
+  .note { font-size:11px; color:#8b94c9; margin-top:8px; line-height:1.6; }
+  #toast { position:fixed; left:50%; bottom:110px; transform:translateX(-50%); background:rgba(10,14,30,.92); border:1px solid #ffd94d; color:#ffe9a3; padding:9px 16px; border-radius:999px; font-size:13px; font-weight:700; display:none; z-index:20; white-space:nowrap; }
 </style>
 </head>
 <body>
-<div id="app">
-  <header>
-    <h1>⚔️ ハクスラTD<span class="sub">Loot Lane Defense</span></h1>
-    <div>
-      <button id="rankBtn" type="button">🏆 ランキング</button>
-      <button id="settingsBtn" type="button">⚙ 設定</button>
-    </div>
-  </header>
+<canvas id="cv"></canvas>
 
-  <div id="hud">
-    <span class="hud-group">🌊 Wave <b id="hWave">-</b></span>
-    <span class="hud-group">💎 コア <b id="hCore">20</b></span>
-    <span class="hud-group">🪙 <b id="hGold">0</b></span>
-    <span class="hud-group">💀 <b id="hKills">0</b></span>
-    <span class="hud-group">⭐ <b id="hScore">0</b></span>
-    <span class="hud-group" style="flex:1;min-width:150px">Lv<b id="hLv">1</b>
-      <span class="bar"><i id="hpFill" style="width:100%"></i></span>
-      <span class="bar"><i id="xpFill" style="width:0%"></i></span>
-    </span>
+<div id="hud">
+  <div id="hudTop">
+    <span class="chip">⏱ <b id="hudTime">0:00</b></span>
+    <span class="chip">🌊 WAVE <b id="hudWave">1</b></span>
+    <span class="chip">⭐ Lv <b id="hudLevel">1</b></span>
+    <span class="chip">🪙 <b id="hudGold">0</b></span>
+    <span class="chip">💀 <b id="hudKills">0</b></span>
   </div>
-
-  <div id="stageWrap"><canvas id="game" width="960" height="600"></canvas></div>
-
-  <div id="controls">
-    <div class="abilities">
-      <button class="ability" id="abQ" type="button">🌀 旋風斬<small>Q：周囲に大ダメージ</small></button>
-      <button class="ability" id="abE" type="button">❄️ 氷結ノヴァ<small>E：周囲を凍結スロー</small></button>
-      <button class="ability" id="abR" type="button">☄️ メテオ<small>R：隕石の雨</small></button>
-    </div>
-    <div class="side-btns">
-      <button id="invBtn" type="button">🎒 装備</button>
-      <button id="waveBtn" type="button" class="primary">▶ 次のWave</button>
-    </div>
-  </div>
-  <p style="color:var(--muted);font-size:12px;margin:8px 2px 0">
-    操作：画面をドラッグ／WASD・矢印キーで移動（攻撃は自動）。空き地の⬜をタップでタワーを建て、建てたタワーをタップで強化・売却。敵を倒すと装備がドロップします。
-  </p>
+  <div id="xpWrap"><div id="xpFill"></div></div>
+  <div id="coreWrap"><span>💎コア</span><div id="coreBarBg"><div id="coreFill"></div></div><span id="coreHpTxt">50/50</span></div>
+  <div id="heroHpBg"><div id="heroHpFill"></div></div>
 </div>
+<div id="banner"></div>
+
+<div id="sideBtns">
+  <button class="sbtn" id="btnInv">🎒</button>
+  <button class="sbtn" id="btnSet">⚙️</button>
+</div>
+<div id="abilBtns">
+  <button class="abtn" id="btnQ">Q<span class="cd" id="cdQ"></span><span class="key">Q</span></button>
+  <button class="abtn" id="btnE">E<span class="cd" id="cdE"></span><span class="key">E</span></button>
+  <button class="abtn big" id="btnR">R<span class="cd" id="cdR"></span><span class="key">R 必殺</span></button>
+</div>
+<div id="joyBase"><div id="joyNub"></div></div>
+<div id="toast"></div>
 
 <!-- スタート -->
-<div class="overlay" id="startScr">
-  <div class="sheet">
-    <h2>⚔️ ハクスラTD</h2>
-    <p>レーンを進む敵の群れからコアを守る、ハクスラ×MOBA×タワーディフェンス。<br>
-    ヒーローを操作して敵を薙ぎ倒し、ドロップした装備でビルドを組み、タワーを建ててWaveを凌ぎ切れ。</p>
-    <p>・敵がコアに届くとコアHPが減少（0で敗北）<br>
-    ・5Waveごとにボス出現<br>
-    ・レベルアップで3つの強化から1つを選択<br>
-    ・装備はレア度つきランダムドロップ（武器／防具／お守り）</p>
-    <div class="btn-row">
-      <button class="primary" id="startBtn" type="button" style="flex:1">▶ ゲームスタート</button>
-    </div>
-    <div class="btn-row">
-      <button id="startRankBtn" type="button">🏆 ランキングを見る</button>
-      <button id="startSettingsBtn" type="button">⚙ 連携設定（Supabase）</button>
-    </div>
+<div class="ov show" id="startOv">
+  <div class="panel">
+    <h2>⚔️ ハクスラTD｜Loot Lane Defense</h2>
+    <p>押し寄せるモンスターの大群から中心の💎コアを守るサバイバル防衛ゲーム。敵を倒して⭐経験値と🪙ゴールドを集め、レベルアップで強化、レア装備を拾って（ハクスラ）、コアの周りにタワーを建てよう。ヒーローが倒れても5秒で復活するが、コアが壊れたらゲームオーバー。</p>
+    <p style="margin-top:6px">操作： 左側をドラッグ＝バーチャルスティック移動（PCはWASD/矢印/クリック移動）。攻撃は自動。スキルはボタン or Q/E/Rキー。タワーはコア周りの台座をタップ。</p>
+    <div id="heroGrid"></div>
+    <input type="text" id="nameInput" placeholder="プレイヤー名（ランキング用）" maxlength="20">
+    <button class="btn" id="btnStart">▶ ゲームスタート</button>
+    <button class="btn sub" id="btnRankTop">🏆 ランキング</button>
+    <div class="note">ベスト記録： <span id="bestTxt">なし</span>　／　Supabase未設定の場合は端末内ランキングになります（⚙設定から連携可能）。</div>
   </div>
 </div>
 
 <!-- レベルアップ -->
-<div class="overlay hidden" id="levelScr">
-  <div class="sheet">
-    <h2>⭐ レベルアップ！</h2>
-    <p>強化を1つ選んでください。</p>
-    <div class="cards" id="pickCards"></div>
-  </div>
-</div>
+<div class="ov" id="lvOv"><div class="panel">
+  <h2>⭐ レベルアップ！ 強化を1つ選んでください</h2>
+  <div class="cards" id="lvCards"></div>
+</div></div>
 
-<!-- タワービルド -->
-<div class="overlay hidden" id="buildScr">
-  <div class="sheet">
-    <h2 id="buildTitle">タワーを建てる</h2>
-    <div class="cards" id="buildCards"></div>
-    <div class="btn-row"><button id="buildClose" type="button" style="flex:1">閉じる</button></div>
-  </div>
-</div>
+<!-- タワー建設 -->
+<div class="ov" id="buildOv"><div class="panel">
+  <h2 id="buildTitle">🗼 タワーを建てる</h2>
+  <div class="cards" id="buildCards"></div>
+  <div id="towerOps"></div>
+  <button class="btn sub" id="btnBuildClose">閉じる</button>
+</div></div>
 
-<!-- 装備 -->
-<div class="overlay hidden" id="invScr">
-  <div class="sheet">
-    <h2>🎒 装備</h2>
-    <p id="heroStats"></p>
-    <h3 style="margin:14px 0 0;font-size:15px">装備中</h3>
-    <div id="equippedList"></div>
-    <h3 style="margin:16px 0 0;font-size:15px">所持アイテム</h3>
-    <div id="invList"></div>
-    <div class="btn-row"><button id="invClose" type="button" style="flex:1">閉じる</button></div>
-  </div>
-</div>
+<!-- インベントリ -->
+<div class="ov" id="invOv"><div class="panel">
+  <h2>🎒 装備・インベントリ</h2>
+  <div id="eqSummary" style="font-size:13px;color:#c6cdf5"></div>
+  <div id="invList"></div>
+  <button class="btn sub" id="btnInvClose">閉じる</button>
+</div></div>
 
 <!-- ゲームオーバー -->
-<div class="overlay hidden" id="overScr">
-  <div class="sheet">
-    <h2>💎 コアが破壊された…</h2>
-    <p id="overStats"></p>
-    <div class="field">
-      <label for="playerName">ランキング用プレイヤー名</label>
-      <input id="playerName" type="text" maxlength="20" placeholder="名前">
-    </div>
-    <div class="btn-row">
-      <button class="primary" id="submitScoreBtn" type="button" style="flex:1">🏆 スコアを登録</button>
-      <button id="retryBtn" type="button" style="flex:1">↻ もう一度</button>
-    </div>
-    <p id="submitNote" style="font-size:12px"></p>
-  </div>
-</div>
+<div class="ov" id="overOv"><div class="panel">
+  <h2>💥 コアが破壊されました…</h2>
+  <p id="overStats"></p>
+  <p id="submitMsg" style="margin-top:8px"></p>
+  <button class="btn" id="btnRetry">🔁 もう一度</button>
+  <button class="btn sub" id="btnRank2">🏆 ランキング</button>
+</div></div>
 
 <!-- ランキング -->
-<div class="overlay hidden" id="rankScr">
-  <div class="sheet">
-    <h2>🏆 ランキング</h2>
-    <p id="rankSource" style="font-size:12px"></p>
-    <table class="rank"><thead><tr><th>#</th><th>名前</th><th class="n">スコア</th><th class="n">Wave</th><th class="n">撃破</th></tr></thead>
-    <tbody id="rankBody"></tbody></table>
-    <div class="btn-row"><button id="rankClose" type="button" style="flex:1">閉じる</button></div>
-  </div>
-</div>
+<div class="ov" id="rankOv"><div class="panel">
+  <h2>🏆 ランキング <span id="rankSrc" style="font-size:12px;color:#8b94c9"></span></h2>
+  <div id="rankList"></div>
+  <button class="btn sub" id="btnRankClose">閉じる</button>
+</div></div>
 
 <!-- 設定 -->
-<div class="overlay hidden" id="settingsScr">
-  <div class="sheet">
-    <h2>⚙ 連携設定（Supabase）</h2>
-    <p>未設定でもゲームは遊べます（ランキングとセーブはこの端末内に保存）。Supabaseを設定すると、ランキングがオンライン共有され、ベスト記録がクラウドに保存されます。設定手順とSQLは SUPABASE.md を参照。</p>
-    <div class="field">
-      <label for="sbUrl">プロジェクトURL</label>
-      <input id="sbUrl" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https://xxxxx.supabase.co">
-    </div>
-    <div class="field">
-      <label for="sbKey">anonキー（公開キー）</label>
-      <input id="sbKey" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="eyJhbGciOi…">
-    </div>
-    <p id="sbStatus" style="font-size:13px"></p>
-    <div class="btn-row">
-      <button class="primary" id="sbSave" type="button" style="flex:1">保存して接続テスト</button>
-      <button id="sbClear" type="button">連携を解除</button>
-      <button id="settingsClose" type="button">閉じる</button>
-    </div>
-  </div>
-</div>
+<div class="ov" id="setOv"><div class="panel">
+  <h2>⚙️ Supabase連携設定</h2>
+  <p>プロジェクトURLとanonキー（公開キー）を入力すると、ランキングとベスト記録がオンライン保存されます。未設定でもローカルで遊べます。手順はリポジトリの SUPABASE.md を参照。</p>
+  <input type="text" id="sbUrl" placeholder="https://xxxxx.supabase.co">
+  <input type="text" id="sbKey" placeholder="anon key">
+  <button class="btn" id="btnSbSave">保存して接続テスト</button>
+  <p id="sbMsg" style="margin-top:8px"></p>
+  <button class="btn sub" id="btnSetClose">閉じる</button>
+</div></div>
 
-<div id="toast"></div>
 <script src="db.js"></script>
 <script src="game.js"></script>
 </body>
